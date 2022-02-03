@@ -5,16 +5,23 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
 public class loginPage {
-public WebDriver driver;
+
+	public WebDriver driver;
 	
-	By email = By.cssSelector("#email");
-	By password = By.cssSelector("#pass");
-	By login = By.xpath("//button[@name='login']");
+	By loginButton = By.linkText("Login");
+	By email = By.cssSelector("input[type='email']");
+	By password = By.cssSelector("input[type='password']");
+	By login = By.cssSelector("button[type='submit']");
 	
 	
 	public loginPage(WebDriver driver) {
 		
 		this.driver = driver;
+	}
+	
+	public WebElement loginButton()
+	{
+		return driver.findElement(loginButton);
 	}
 	
 

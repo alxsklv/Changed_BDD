@@ -5,7 +5,8 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
 public class userDetailsPage {
-public WebDriver driver;
+	
+	public WebDriver driver;
 	
 	By addNewUser = By.cssSelector("#add");
 

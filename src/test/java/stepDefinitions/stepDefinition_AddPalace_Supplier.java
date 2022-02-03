@@ -1,119 +1,147 @@
 package stepDefinitions;
 
+import static org.testng.Assert.assertEquals;
+
 import java.util.List;
 
 import org.openqa.selenium.By;
-
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
-
-import org.openqa.selenium.support.ui.Select;
 
 import org.testng.Assert;
 
 import Resources.baseResources;
+import Resources.lazyDriver;
 import io.cucumber.java.en.And;
-import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import pageObjects.supplierLoginPage;
 import pageObjects.supplierMainElements;
+import pageObjects.hotelDetailsPageAdmin;
+
+
 
 public class stepDefinition_AddPalace_Supplier extends baseResources {
+	lazyDriver driver;
+	supplierMainElements supplierMainElements;
+	hotelDetailsPageAdmin hotelDetailsPageAdmin;
 
 	
-    @Given("^User is on login page of supplier \"([^\"]*)\"$")
-    public void user_is_on_supplier_login_page(String urlSupplier) throws Throwable {
-    	{
-    		//here I use Cucumber for parameterization but data.properties could be also used instead
-    		driver = initializeDriver();
-    		driver.get(urlSupplier); 
-    	}
+	public stepDefinition_AddPalace_Supplier(lazyDriver driver, supplierMainElements supplierMainElements, hotelDetailsPageAdmin hotelDetailsPageAdmin) {
+		
+		this.driver = driver;
+		this.supplierMainElements = supplierMainElements;	
+		this.hotelDetailsPageAdmin = hotelDetailsPageAdmin;
+	}
+	
+
+    
+    @And("^User selects Manage Hotels subsection of Hotels section$")
+    public void user_selects_manage_hotels_subsection_of_hotels_section() throws Throwable {
+
+    	supplierMainElements.hotelsParentTab().click();
+    	supplierMainElements.subHotelItem().click();
+    	supplierMainElements.manageHotels().click();   	 	
+    	
     }
     
-    @And("^User performs login to environment using valid user \"([^\"]*)\" and password \"([^\"]*)\"$")
-    public void user_performs_login_to_environment(String userName, String password) throws Throwable {
-		supplierLoginPage l = new supplierLoginPage(driver);
-		l.enterEmail().sendKeys(userName);
-		l.enterPassword().sendKeys(password);
-		l.clickLogin().click(); 
+    @And("^User clicks on Add button to start with the creation of new Hotel$")
+    public void user_clicks_on_add_button() throws Throwable {
+       
+    	supplierMainElements.addHotelButton().click();
+    	
+    	//This is just temp code to show that API call is correct. However, BE page is broken by itself
+    	//THis code should be removed as soon as the functionality to add a hotel is back 
+    	//All next methods of this class are for TTD and should be slightly changed later 
+    	Thread.sleep(1000);
+    	String currentUrl = driver.getCurrentUrl();    	
+    	assertEquals("https://phptravels.net/api/supplier/hotels/add", currentUrl);          
     }
     
-    @And("^User selects Add New Hotel section to add new MM hotel$")
-    public void user_selects_add_new_hotel_section_to_add_new_mm_hotel() throws Throwable {
-        supplierMainElements m = new supplierMainElements(driver);
-        m.addHotel().click();
+    @And("^Admin fills all parameters (.+) (.+) (.+)  for General Tab$")
+    public void admin_fills_all_parameters_for_general_tab(String hotelname, String description, String price) throws Throwable {
         
-		String URL = driver.getCurrentUrl();
-		Assert.assertTrue(URL.contains("/addHotel"));
+    	//there should be more fields for General tab
+    	hotelDetailsPageAdmin.hotelNameAdmin().sendKeys(hotelname);
+    	
+    	//I observed that description is an iFrame thing
+    	driver.switchTo().frame(0);
+    	hotelDetailsPageAdmin.descriptionBox().sendKeys(description);
+    	driver.switchTo().defaultContent();
+    	
+    	hotelDetailsPageAdmin.priceHotelAdmin().sendKeys(price);    	
+    	
     }
-
-    @When("^BE User enters all hotel parameters for the new \"([^\"]*)\" hotel and hits Save$")
-    public void user_enters_parameters_and_save(String hotelName) throws Throwable {
-    	
-    	supplierMainElements s = new supplierMainElements(driver);
-    	
-        //Entering Hotel Name
-    	s.hotelNameField().sendKeys(hotelName);
-    	
-    	//assuming that facilities could be selected using drop-down list
-    	Select dropOptions =  new Select(s.facilitiesDrop());    	
-    	dropOptions.selectByVisibleText("Bar");
-    	dropOptions.selectByVisibleText("Computer facility");
-    	dropOptions.selectByVisibleText("Conference and meeting facilities");
-    	dropOptions.selectByVisibleText("Disabled room");
-    	dropOptions.selectByVisibleText("Fitness room");
-    	dropOptions.selectByVisibleText("Health club");
-    	
-    	//populating changes 
-    	s.addHotel().click();
-    	
-    	//all facilities available in drop-down
-    	/*
-    	Bar
-    	Computer facility
-    	Conference and meeting facilities
-    	Disabled room
-    	Fitness room
-    	Health club
-    	Laundry service 
-    	 */
-    }
-
-    @Then("^New hotel gets populated with \"([^\"]*)\" message$")
-    public void new_hotel_gets_populated_with_something_message(String shouldBeMessage) throws Throwable {
+    
+    @And("^Checks all parameters of Amenties tab except for \"([^\"]*)\"$")    
+    public void checks_all_parameters(String uncheckOption) throws Throwable {
         
-    	String message = driver.findElement(By.className("message")).getText();
-        Assert.assertEquals(message, shouldBeMessage);
+    	//Amenities are different for Hotels but I used amenities for Rooms 
+    	//Assuming that we have something very similar for Hotels and mechanic will be the same
+    	hotelDetailsPageAdmin.amentiesTab().click();
+    	
+    	List<WebElement> valuesAmenties = driver.findElements(By.xpath("//*[@class='col-md-6']//*[@class='pointer']"));
+    	
+    	for (int i=0; i<valuesAmenties.size(); i++)
+        	{
+        		String singleValue = valuesAmenties.get(i).getText();
+        		
+        		if (singleValue.contains(uncheckOption)) 
+        		{
+        			continue;
+        		}
+        		else
+        		{
+        			valuesAmenties.get(i).click();
+        		}
+        		
+        	}   	
+    	
     }
-
-    @And("^The \"([^\"]*)\" option is absent in the list of facilities$")
-    public void option_is_absent_in_the_list(String invalidOption) throws Throwable {
+    
+    @And("^Enters (.+) for Translate Tab$")
+    public void enters_for_translate_tab(String germanDescription) throws Throwable {
         
-    	//assuming that after 'Save' we can see the details page of the new hotel
-    	//all facilities are shown as a table and added facilities are in the first column
+    	hotelDetailsPageAdmin.translateTab().click();
     	
-    		
-    	List<WebElement> valuesFromTable = driver.findElements(By.xpath(".tableHead tb:nth-child(1)"));		
-    		
-    	for (int i=0; i<valuesFromTable.size(); i++)
-    	{
-    		String singleValue = valuesFromTable.get(i).getText();
-    		
-    		if (singleValue.equals(invalidOption)) 
-    		{
-    			Assert.assertTrue(false, "This option should not be selected!");
-    		}
-    		else
-    		{
-    			Assert.assertTrue(true);
-    		}
-    		
-    	}
+    	//it should be the iFrame 
+    	driver.switchTo().frame(0);
+    	hotelDetailsPageAdmin.descriptionBoxGerman().sendKeys(germanDescription);
+    	driver.switchTo().defaultContent();
+    }
+    
+    @When("^Admin hits submit button$")
+    public void admin_hits_submit_button() throws Throwable {
     	
-    	driver.quit();
+    	driver.findElement(By.cssSelector("body")).sendKeys(Keys.CONTROL, Keys.END);
+    	hotelDetailsPageAdmin.submitButton().click();
+
+    }
+    
+    @Then("^New hotel with the (.+) appears in the list of Hotels$")
+    public void new_hotel_with_the_appears_in_the_list_of_hotels(String hotelname) throws Throwable {
+
+    	hotelDetailsPageAdmin.hotelListContainer().isEnabled();
+    	
+    	//getting all the names of the hotel from the list and checking if our new hotel is present
+    	List<WebElement> valuesHotels = driver.findElements(By.xpath("//*[@class='col-md-6']//*[@class='pointer']"));
+    	
+    	for (int i=0; i<valuesHotels.size(); i++)
+        	{
+        		String singleHotel = valuesHotels.get(i).getText();
+        		
+        		if (singleHotel.contains(hotelname)) 
+        		{
+        			Assert.assertTrue(true);
+        		}
+        		else
+        		{
+        			Assert.assertTrue(false,"Hotel is absent in the list");
+        		}
+        		
+        	}  	
     	
     }
-
-
-
 }
+    	
+
+

@@ -1,104 +1,154 @@
 package stepDefinitions;
 
+
+import java.util.List;
+
 import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 
 import Resources.baseResources;
+import Resources.dataPicker;
+import Resources.lazyDriver;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import pageObjects.homePage;
 import pageObjects.hotelSelectionPage;
+import pageObjects.hotelDetailsPage_FE;
 import pageObjects.profilePage;
 
 public class stepDefinition_findBestHotel extends baseResources{
 	
-	@Given("^User selects Hotels tab$")
-    public void user_selects_hotels_tab() throws Throwable {
+	lazyDriver driver;
+	homePage homePage;
+	hotelSelectionPage hotelSelectionPage;
+	profilePage profilePage;
+	dataPicker dataPicker;
+	hotelDetailsPage_FE hotelDetailsPage_FE;
+
+	
+public stepDefinition_findBestHotel(homePage homePage, lazyDriver driver, profilePage profilePage, hotelSelectionPage hotelSelectionPage, dataPicker dataPicker, hotelDetailsPage_FE hotelDetailsPage_FE) {
 		
-        homePage h = new homePage(driver);
+		this.homePage = homePage;
+		this.driver = driver;
+		this.hotelSelectionPage = hotelSelectionPage;
+		this.profilePage = profilePage;	
+		this.dataPicker = dataPicker;
+		this.hotelDetailsPage_FE = hotelDetailsPage_FE;
+		
+	}
+	
+	@Given("^User selects Hotels tab$")
+    public void user_selects_hotels_tab() throws Throwable {		
         
-        h.hotelsTab().click();        
-        
-        WebDriverWait wait = new WebDriverWait(driver,30);
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("#findYourHotel")));
+		homePage.hotelsTab().click();  	
+
     }
 
-    @When("^User selects all necessary filters$")
-    public void user_selects_all_necessary_filters() throws Throwable {
-    	hotelSelectionPage s = new hotelSelectionPage(driver); 
+    @When("^User selects all necessary filters and city is \"([^\"]*)\"$")
+    public void user_selects_all_necessary_filters_something(String cityName) throws Throwable {
     	
-    	s.cityName().sendKeys("Tokio");
-    	s.peopleAmount().sendKeys("1");
-    	s.filtersExpand().click();
-    	
-    	
-    	//select checkbox for price range filter and check if it is selected
-    	s.priceFilter_between_50_and_100().click();
-    	Assert.assertTrue(s.priceFilter_between_50_and_100().isSelected());
-    	
-    	//next checkbox is not visible by default so scrolling is required
-    	//after element is visible - select its checkbox 
-    	WebElement buildingVilla = s.buildingType_Villa();
-    	((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", buildingVilla);
-    	Thread.sleep(500);
-    	buildingVilla.click();
-    	Assert.assertTrue(buildingVilla.isSelected());
-    	
-    	s.starRating_5().click();
-    	Assert.assertTrue(s.starRating_5().isSelected());
-    	
-    	//scroll to district section and select city Center checkbox 
-    	((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", s.district_Center());
-    	Thread.sleep(500);
-    	s.district_Center().click();    	
+    	hotelSelectionPage.cityName().click();
+    	hotelSelectionPage.cityNameActive().sendKeys(cityName);  
+    	Thread.sleep(1000);
+    	hotelSelectionPage.foundHotel().click();
+
+    	WebElement checkIn=hotelSelectionPage.checkIn();
+    	WebElement checkOut=hotelSelectionPage.checkOut();    	
+
+    	checkIn.click();
+    	dataPicker.dateSelection(15, checkIn);
+    	dataPicker.dateSelection(24, checkOut); 	    	
+    		
     }
 
     @Then("^User hits Search button$")
     public void they_hits_search_button() throws Throwable {
     	
-    	hotelSelectionPage s = new hotelSelectionPage(driver); 
+    	hotelSelectionPage.searchButton().click();
+
+    }
+
+
+    @And("^User sets star grade to two stars and click on Details$")
+    public void user_sets_star_grade_to_two_stars() throws Throwable {
+
+    	hotelDetailsPage_FE.twoStars().click();    	
+    	hotelDetailsPage_FE.detailsButton().click();    	
+
+    }
+
+    @And("^User books cheapest Triple rooms option from the details page$")
+    public void user_books_cheapest_option() throws Throwable {
     	
-    	//scroll to very bottom of the page where Apply button is located
+    	hotelDetailsPage_FE.cookiesBanner().click();
+    	hotelDetailsPage_FE.bookNow().click();    	
+
+    }
+
+    @And("^User fills in travellers data, payment method, accept terms and confirm booking$")
+    public void user_fills_in_travellers_data_payment_method_accept_terms_and_confirm_booking() throws Throwable {
+    	
+    	hotelDetailsPage_FE.firstName_1().sendKeys("Alex");
+    	hotelDetailsPage_FE.lastName_1().sendKeys("QA");
+    	hotelDetailsPage_FE.firstName_2().sendKeys("Tom");
+    	hotelDetailsPage_FE.lastName_2().sendKeys("Black");
+    	
+    	hotelDetailsPage_FE.paymentMethod().click();    	
+    	
     	driver.findElement(By.cssSelector("body")).sendKeys(Keys.CONTROL, Keys.END);
-    	s.applyButton().click();
+    	Thread.sleep(1000);
     	
-    	WebDriverWait wait = new WebDriverWait(driver,30);
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("//div[contains(text(),'Hotel is found')]")));
+    	hotelDetailsPage_FE.termsCheck().click();
+    	hotelDetailsPage_FE.confirmBooking().click();
+    	
+    	Thread.sleep(1000);
+    	String confirmationMessage = hotelDetailsPage_FE.confirmationMessage().getText(); 
+    	
+    	if (confirmationMessage.equals("Invoice ID or Number is Wrong!")) {
+    		Assert.assertTrue(false,"This means that website is broken and does not allow to add hotel to Profile (this is the most possible option as I always see this message");
+    	}
+    	
+    	else {
+    		Assert.assertTrue(true,"Suprisingly, this function is working and hotel was booked");
+    	}
+    	
+
     }
-
-
-    @And("^Purchase a hotel from search results$")
-    public void purchase_a_hotel_from_search_results() throws Throwable {
+    
+    @And("^User sets language to (.+)$")
+    public void user_sets_language_to(String language) throws Throwable {
         
-    	//Assuming that only one 'Forest' hotel was found after all filters were applied
-    	driver.findElement(By.cssSelector("#ForestHotel")).click();
-    	Thread.sleep(2000);
-    	driver.findElement(By.cssSelector("#purchase")).click();
+    	hotelSelectionPage.localsButton().click();
+    	Thread.sleep(3000);
     	
-    	String hotelBooked = driver.findElement(By.cssSelector("#bookedMessage")).getText();
-    	Assert.assertEquals(hotelBooked, "Booking was added to your profile");
-    }
+    	
+    	
+    	List<WebElement> languagesAll = driver.findElements(By.xpath("//*[@class='dropdown']//*[@aria-labelledby='languages']/li/a"));
+    	
+    	for (int i=0; i<languagesAll.size(); i++)
+        	{
+        		String singleLanguage = languagesAll.get(i).getText();
 
-    @And("^Checks the profile to see that the hotel is booked$")
-    public void check_the_profile_to_see_that_the_hotel_is_booked() throws Throwable {
-        
-    	profilePage p = new profilePage(driver); 
-    	p.myBookings().click();
-    	Thread.sleep(2000);
-    	
-    	//checking that the hotel is present in Booking section of the Profile page
-    	String hotelName = driver.findElement(By.xpath("//*[text()='Forest Hotel']")).getText();
-    	Assert.assertTrue(hotelName.contains("Forest Hotel"));    
-    	
-    	driver.quit();
-    	
+        		
+        		if (singleLanguage.contains(language)) 
+        		{
+        			System.out.println(languagesAll.get(i).getText());
+        		
+        			languagesAll.get(i).click();  
+        	    	Thread.sleep(1000);
+        	    	break;
+ 
+        		}
+        		else
+        		{
+        			continue;
+        		}
+        		
+        	}  
     }
 
 }

@@ -4,14 +4,18 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
-public class homePage {
-public WebDriver driver;
+import Resources.baseResources;
+
+public class homePage extends baseResources {
+
 	
-	By onSiteUsername = By.cssSelector("#currentUser");
-	By profileButton = By.cssSelector("#profileButton");
-	By aboutTab = By.cssSelector("#about");
-	By hotelsTab = By.cssSelector("#hotels");
-	By membershipTab = By.cssSelector("#membership");
+	By onSiteUsername = By.xpath("//*[@class='author__title']/strong");
+	By profileButtonIcon = By.xpath("//*[@class='sidebar-menu list-items']/li[4]");
+
+
+	By hotelsTab = By.cssSelector(".main-menu-content [href=\"https://www.phptravels.net/hotels\"]");
+	
+	By bookingsTab = By.xpath("//div[@class='sidebar-menu-wrap']//a[@href='https://www.phptravels.net/account/bookings']");
 	
 	
 	
@@ -28,24 +32,19 @@ public WebDriver driver;
 	
 	public WebElement profileButtonIcon()
 	{
-		return driver.findElement(profileButton);
-	}
-	
-	public WebElement aboutTab()
-	{
-		return driver.findElement(aboutTab);
-	}
+		return driver.findElement(profileButtonIcon);
+	}	
+
 	
 	public WebElement hotelsTab()
 	{
 		return driver.findElement(hotelsTab);
-	}
+	}	
 	
-	public WebElement membershipTab()
+	public WebElement bookingsTab()
 	{
-		return driver.findElement(membershipTab);
+		return driver.findElement(bookingsTab);
 	}
-	
 
 
 }

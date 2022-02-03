@@ -4,29 +4,30 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
+import Resources.Waiter;
+
 public class hotelSelectionPage {
-public WebDriver driver;
 	
-	//Main level fields 
-    By searchField = By.cssSelector("#search");	
-	By cityName = By.cssSelector("#ss");	
-	By peopleAmount = By.cssSelector("#adults");
+	public WebDriver driver;
+	public Waiter waiter;	
+ 
 
-	//Filters related fields 
-	//Filters on the website are shown as checkboxes 
-	By filtersExpand = By.cssSelector("#filters");
-	By priceFilter_between_50_and_100 = By.cssSelector("#price50and100");
-	By buildingType_Villa = By.cssSelector("#villa");
-	By district_Center = By.cssSelector("#cityCenter");
-	By starRating_5 = By.cssSelector("#starFive");
+	By cityName = By.cssSelector(".select2-selection__rendered");
+	By cityNameActive = By.cssSelector(".select2-search__field");	
+    By foundHotel = By.xpath("//body/span[1]/span[1]/span[2]/ul[1]/li[1]");
+    
+    By checkIn = By.cssSelector("#checkin");
+    By checkOut = By.cssSelector("#checkout");
 	
-	By applyButton = By.cssSelector("#applyBtn");	
+	By searchButton = By.cssSelector("#submit");
 	
-
+	By localsButton = By.cssSelector("#languages");
 	
-	public hotelSelectionPage(WebDriver driver) {
+	
+	public hotelSelectionPage(WebDriver driver, Waiter waiter) {
 		
 		this.driver = driver;
+		this.waiter = waiter;
 	}
 	
 
@@ -36,44 +37,36 @@ public WebDriver driver;
 	}
 	
 	
-	public WebElement filtersExpand()
+	public WebElement cityNameActive()
 	{
-		return driver.findElement(filtersExpand);
+		return driver.findElement(cityNameActive);
 	}
 	
-	public WebElement peopleAmount()
+	public WebElement foundHotel()
 	{
-		return driver.findElement(peopleAmount);
+		return waiter.fluentWait(foundHotel);
 	}
 	
-	public WebElement priceFilter_between_50_and_100()
+	public WebElement checkIn()
 	{
-		return driver.findElement(priceFilter_between_50_and_100);
-	}
+		return waiter.fluentWait(checkIn);
+	}	
 	
-	public WebElement buildingType_Villa()
+	public WebElement checkOut()
 	{
-		return driver.findElement(buildingType_Villa);
-	}
+		return waiter.fluentWait(checkOut);
+	}	
 	
-	public WebElement district_Center()
-	{
-		return driver.findElement(district_Center);
-	}
 	
-	public WebElement starRating_5()
+	public WebElement searchButton()
 	{
-		return driver.findElement(starRating_5);
-	}
+		return driver.findElement(searchButton);
+	}	
 	
-	public WebElement applyButton()
+	public WebElement localsButton()
 	{
-		return driver.findElement(applyButton);
+		return driver.findElement(localsButton);
 	}
-	
-	public WebElement searchField()
-	{
-		return driver.findElement(searchField);
-	}
+
 	
 }
