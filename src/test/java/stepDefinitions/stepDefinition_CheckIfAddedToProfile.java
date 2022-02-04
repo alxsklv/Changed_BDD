@@ -42,6 +42,12 @@ public class stepDefinition_CheckIfAddedToProfile extends baseResources {
     @Then("^User see his booking in My Booking list$")
     public void user_see_his_booking_in_my_booking_list() throws Throwable {
     	
+
+    	// Switch to new window opened
+    	for(String winHandle : driver.getWindowHandles()){
+    	    driver.switchTo().window(winHandle);
+    	}
+    	
     	String nameOfHotel = hotelDetailsPage_FE.bookedHotelName().getText();    	
     	
     	if (nameOfHotel.contains("Rendezvous Hotels")) {

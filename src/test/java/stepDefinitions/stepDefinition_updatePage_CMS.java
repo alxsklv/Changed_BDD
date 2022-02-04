@@ -63,6 +63,8 @@ public class stepDefinition_updatePage_CMS {
     @And("^User sets permalink to \"([^\"]*)\"$")
     public void user_sets_permalink_to_something(String permalink) throws InterruptedException 
     {
+    	pagesPageCMS.permaLink().click();
+    	Thread.sleep(1000);
     	pagesPageCMS.permaLink().sendKeys(Keys.chord(Keys.CONTROL, "a"));
     	pagesPageCMS.permaLink().sendKeys(permalink);
     }
