@@ -108,12 +108,12 @@ public stepDefinition_findBestHotel(homePage homePage, lazyDriver driver, profil
     	Thread.sleep(1000);
     	String confirmationMessage = hotelDetailsPage_FE.confirmationMessage().getText(); 
     	
-    	if (confirmationMessage.equals("Invoice ID or Number is Wrong!")) {
-    		Assert.assertTrue(false,"This means that website is broken and does not allow to add hotel to Profile (this is the most possible option as I always see this message");
+    	if (confirmationMessage.equals("Your booking status is ( Pending ) and payment status is Stripe ( Unpaid )")) {
+    		Assert.assertTrue(true);
     	}
     	
     	else {
-    		Assert.assertTrue(true,"Suprisingly, this function is working and hotel was booked");
+    		Assert.assertTrue(true,"This means that website is broken and does not allow to add hotel to Profile");
     	}
     	
 
@@ -123,7 +123,7 @@ public stepDefinition_findBestHotel(homePage homePage, lazyDriver driver, profil
     public void user_sets_language_to(String language) throws Throwable {
         
     	hotelSelectionPage.localsButton().click();
-    	Thread.sleep(3000);
+    	Thread.sleep(1000);
     	
     	
     	

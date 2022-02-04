@@ -13,7 +13,7 @@ And User books cheapest Triple rooms option from the details page
 And User fills in travellers data, payment method, accept terms and confirm booking
 
 
-Scenario: User checks if the booked hotel has appeared in his Profile (this scenario will fail as last step of previous scenario always fails and no any hotel in Profile)
+Scenario: User checks if the booked hotel has appeared in his Profile 
 Given User is on FE login page "https://www.phptravels.net/" and login
 And User login into application with username "user@phptravels.com" and password "demouser"
 When User selects My Bookings tab

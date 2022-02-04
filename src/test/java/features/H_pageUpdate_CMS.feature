@@ -25,5 +25,5 @@ Then User can see "Test Title", "Test description" on page
 And SEO keyword "test_seo_keyword" and SEO description "Test SEO description" are presented on page
 
 Examples:
-|module_url                           |
-|https://phptravels.net/cookies-policy|
+|module_url                               |
+|https://www.phptravels.net/cookies-policy|

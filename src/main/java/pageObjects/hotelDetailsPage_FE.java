@@ -29,8 +29,9 @@ public class hotelDetailsPage_FE {
 	By termsCheck = By.cssSelector(".custom-checkbox");
 	By confirmBooking = By.cssSelector("#booking");
 	
-	//There is no chance to receive success message so I'm not sure what will be selector 
-	By confirmationMessage = By.xpath("/html[1]/body[1]/p[1]/strong[1]");
+	By confirmationMessage = By.xpath("//*[@class='infobox infobox-danger']");
+	
+	By bookedHotelName = By.xpath("//h5[contains(text(),'Rendezvous Hotels')]");
 	
 	
 	
@@ -101,6 +102,12 @@ public class hotelDetailsPage_FE {
 	{
 		return driver.findElement(confirmBooking);
 	}
+	
+	public WebElement bookedHotelName()
+	{
+		return driver.findElement(bookedHotelName);
+	}
+	
 	
 }
 

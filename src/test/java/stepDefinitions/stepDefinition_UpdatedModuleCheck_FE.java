@@ -32,7 +32,7 @@ public class stepDefinition_UpdatedModuleCheck_FE {
     @When("^Page is loaded$")
     public void page_is_loaded() throws Throwable {
     	String URL = driver.getCurrentUrl();
-    	Assert.assertEquals(URL, "https://phptravels.net/cookies-policy");  //TODO remove hardocding and put variable defined through feature file 
+    	Assert.assertEquals(URL, "https://www.phptravels.net/cookies-policy");  //TODO remove hardocding and put variable defined through feature file 
     }
 
     @Then("User can see {string}, {string} on page")

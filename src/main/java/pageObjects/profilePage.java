@@ -21,6 +21,8 @@ public class profilePage {
 	By successMessage = By.cssSelector(".dashboard-main-content .form-content .alert");
 	
 	By myBookingMessage = By.xpath("//div[@class='form-content']//child::div");
+	
+	By firstBookingInList = By.xpath("//*[@class='table  text-center']//tbody/tr[1]/td[4]");
 
 	
 	
@@ -61,7 +63,12 @@ public class profilePage {
 	public WebElement myBookingMessage()
 	{
 		return driver.findElement(myBookingMessage);
-	}	
+	}
+	
+	public WebElement firstBookingInList()
+	{
+		return driver.findElement(firstBookingInList);
+	}
 
 
 }
